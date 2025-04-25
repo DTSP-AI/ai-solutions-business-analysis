@@ -9,8 +9,8 @@ import google.generativeai as genai
 st.set_page_config(page_title="AI Marketing Assistant", layout="wide")
 
 # Environment variable fallback (or manually paste your keys here)
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyBfJz9zcdg9rbSXvreDqvXzErBC4viUw2c")
-TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY", "93619a3c8d0ec722a369f5e9c5f2c3eabf83dbad95af8ec02c23b36b6f44d25d")
+GEMINI_API_KEY = st.secrets["api_keys"]["gemini"]
+TOGETHER_API_KEY = st.secrets["api_keys"]["together"]
 
 # ----------- USER PROFILE INPUT ----------- 
 st.sidebar.header("👤 Your Business Profile")
