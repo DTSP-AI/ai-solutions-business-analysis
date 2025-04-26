@@ -5,14 +5,11 @@ import os
 from datetime import date
 import google.generativeai as genai
 
-# ----------- CONFIG ----------- 
 st.set_page_config(page_title="AI Marketing Assistant", layout="wide")
 
-# Environment variable fallback (or manually paste your keys here)
 GEMINI_API_KEY = st.secrets["api_keys"]["gemini"]
 TOGETHER_API_KEY = st.secrets["api_keys"]["together"]
 
-# ----------- USER PROFILE INPUT ----------- 
 st.sidebar.header("👤 Your Business Profile")
 
 user_name = st.sidebar.text_input("Your Name")
@@ -27,11 +24,9 @@ user_profile = {
     "location": location
 }
 
-# ----------- HEADER ----------- 
 st.title("🧠 AI-Powered Marketing Assistant")
 st.write(f"👋 Hello {user_profile['name']}, here's your personalized marketing strategy for your *{user_profile['business_type']}* business!")
 
-# ----------- GEMINI STRATEGY SUGGESTIONS ----------- 
 def generate_marketing_templates(profile):
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel("gemini-2.0-flash-thinking-exp")
@@ -58,7 +53,6 @@ Make sure to consider income and location in your suggestions.
         response = model.generate_content(prompt)
         content = response.text.strip()
 
-        # Clean JSON block if wrapped in markdown code block
         content = content.split("```json")[-1].split("```")[0].strip() if "```" in content else content
 
         parsed = json.loads(content)
@@ -75,7 +69,6 @@ Make sure to consider income and location in your suggestions.
         st.code(str(e))
         return {"error": str(e), "raw": content if 'content' in locals() else ""}
 
-# Fetch strategy suggestions if not already in session state
 if "template_data" not in st.session_state:
     st.session_state.template_data = generate_marketing_templates(user_profile)
 
@@ -89,7 +82,6 @@ if "error" in template_data:
     st.code(template_data.get("raw", ""))
     st.stop()
 
-# ----------- STRATEGY DISPLAY ----------- 
 st.subheader("📌 Personalized Strategy")
 st.markdown("*Campaign Goals:*")
 campaign_goals = [str(goal) for goal in template_data.get("campaign_goals", [])]
@@ -102,7 +94,6 @@ st.markdown("- " + "\n- ".join(template_data["post_types"]))
 
 st.markdown(f"*Posting Frequency:* {template_data['posting_frequency']}")
 
-# ----------- TOGETHER.AI CONTENT CALENDAR ----------- 
 def generate_content_calendar(profile, template):
     user_prompt = f"""
 Create a 15-day social media content calendar for a {profile['business_type']} brand.
@@ -140,7 +131,6 @@ if st.button("📅 Generate 15-Day Content Calendar"):
         st.subheader("📆 Your Social Media Calendar")
         st.markdown(calendar)
 
-# ----------- GEMINI EMAIL GENERATOR ----------- 
 def generate_email(subject, tone, product):
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel("gemini-2.0-flash-thinking-exp")
