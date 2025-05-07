@@ -1,0 +1,699 @@
+KODEY AGENT BUILD
+
+Kodey.ai Platform Knowledge Base Guide
+Overview
+The Kodey.ai platform provides a robust knowledge base functionality that allows agents to access and utilize various document types when responding to user queries. This guide outlines the supported file formats and best practices for leveraging the knowledge base effectively.
+
+Supported File Formats
+Kodey.ai's knowledge base currently supports the following file formats:
+
+Text files (.txt)
+Word documents (.doc, .docx)
+PDF documents (.pdf)
+CSV files (.csv)
+Unsupported File Formats
+The following file formats are not currently supported by the Kodey.ai knowledge base:
+
+Video files (.mp4, .mov, etc.)
+PowerPoint presentations (.ppt, .pptx)
+Excel spreadsheets (.xls, .xlsx)
+Image files (.jpg, .png, etc.)
+Best Practices for Accessing Knowledge
+Using the AgentKnowledgebase Tool
+When building agents that need to access the knowledge base, always use the AgentKnowledgebase tool to:
+
+Retrieve relevant information from uploaded documents
+Match the speaking tone and style present in the documents
+Example implementation:
+
+
+NOTE: Always use AgentKnowledgebase tool to get the speaking tone from the documents and then reply on the same tone and speaking style of Ed.
+Benefits of Proper Knowledge Base Usage
+Consistent Brand Voice: Ensure your agent maintains the appropriate tone and style across all communications
+Accurate Information: Access up-to-date information from your knowledge documents
+Improved User Experience: Provide more relevant and contextual responses
+File Preparation Tips
+For optimal knowledge extraction, consider these tips when preparing files for upload:
+
+Text Files: Use clear headings and structured formatting
+Word Documents: Utilize proper heading styles and document organization
+PDFs: Ensure text is selectable and not embedded in images
+CSVs: Include clear column headers and consistent data formatting
+Future Enhancements
+The Kodey.ai team is continuously working to expand supported file types and improve knowledge extraction capabilities. Stay tuned for future updates regarding additional file format support.
+
+
+#################################################
+
+Kodey Ai Agent Docs
+
+Introduction to Kodey.ai Prompting
+Kodey.ai's platform allows you to create multi-agent systems where a supervisor agent coordinates with specialized sub-agents to handle different aspects of user conversations. This approach enables you to build sophisticated AI assistants that can handle a wide range of tasks with specialized expertise.
+
+What is Multi-Agent Prompting?
+Multi-agent prompting is a system architecture where:
+
+A supervisor agent acts as a coordinator
+Multiple specialized sub-agents handle specific tasks or domains
+Routing logic determines which agent responds to each user message
+Each agent has its own prompt and capabilities
+Key Components
+Supervisor Prompt: Controls the routing logic that determines which agent handles each user message
+Agent Routing Logic: Defines specific rules for when particular agents should be selected
+Agent-Specific Prompts: Determines how individual agents behave within their domain
+XML Tags: Structural elements that help organize your prompts for better performance
+Benefits of Multi-Agent Systems
+Specialized expertise: Each agent can focus on what it does best
+Cleaner prompts: Avoid creating massive, unwieldy prompts that try to handle everything
+Better organization: Separate concerns for easier maintenance and updates
+Improved performance: Agents that focus on specific tasks typically perform those tasks better
+Next Steps
+To start building your multi-agent system in Kodey.ai, you'll need to understand:
+
+How to configure the supervisor prompt
+How to set up agent routing logic
+How to create effective agent-specific prompts
+How to use XML tags effectively
+How supervisor and agents interact
+The recommended workflow for creating agents
+The following sections will guide you through each of these topics in detail.
+
+######################################################
+
+Supervisor Prompting
+
+The supervisor prompt is the central control mechanism in your multi-agent system. It determines which agent should handle each user message, directing the flow of the conversation appropriately.
+
+What is the Supervisor Prompt?
+The supervisor prompt controls the routing logic that determines which agent handles each user message. Think of the supervisor as a director that manages specialized employees (sub-agents), deciding who should handle each task based on their expertise.
+
+How to Access and Edit the Supervisor Prompt
+Navigate to your team settings in the Kodey.ai dashboard
+Select the "Supervisor" tab
+You'll see a text area containing the default supervisor prompt
+Make your edits while preserving the core functionality
+Click "Save" to apply your changes
+Default Supervisor Prompt Structure
+The platform provides a default supervisor prompt that looks like this:
+
+
+You are a supervisor being tasked to route/choose one worker among all options. 
+Respond with the worker to act next followed by its reasoning.
+When everything is done, respond with finish.
+IMPORTANT: Always keep this default text as the foundation of your supervisor prompt. Add your customizations after or around it, but do not remove these critical instructions. Removing key elements like "Respond with the worker to act next" or the "finish" instruction may break your agent system.
+
+Why Customize the Supervisor Prompt?
+Custom supervisor prompting allows you to:
+
+Define specific routing conditions for different conversation types
+Create specialized conversation flows
+Set up context-aware agent selection
+Maintain consistent conversation patterns
+How to Customize the Supervisor Prompt
+Start with the default prompt
+Add context about your agents and their specialties below the default prompt
+Use XML tags (like <normal_flow> and <deep_dive_flow>) to organize different routing conditions
+Include specific criteria for when each agent should be selected
+Test your customized prompt with sample user inputs
+Example addition to the default prompt:
+
+
+<normal_flow>
+For normal conversational interactions, use the Coach agent. This includes introductory 
+conversations, answering basic questions, and providing general information.
+</normal_flow>
+
+<deep_dive_flow>
+If the user explicitly asks for a deep dive or detailed analysis, use the DeepDive agent. 
+This includes when users ask for comprehensive information, step-by-step explanations, or in-depth analysis.
+</deep_dive_flow>
+Best Practices for Supervisor Prompts
+Always start with the default supervisor prompt
+Add your customizations while preserving the core functionality
+Create clear, distinct criteria for when each agent should be selected
+Use XML tags to organize different routing conditions
+Keep routing logic simple and understandable
+Test thoroughly after making changes
+Testing Your Supervisor Prompt
+Save your changes to the supervisor prompt
+Use the test interface to start a conversation
+Try different inputs that should trigger different agents
+Verify that the expected agent is selected each time
+Make adjustments as needed based on the results
+Next Steps
+
+
+##########################################################
+
+Agent Routing Logic
+
+Agent routing logic allows you to define specific conditions that determine when a particular agent should be selected, providing fine-grained control over your multi-agent system's behavior.
+
+What is Agent Routing?
+Agent routing is an optional configuration that extends the supervisor's decision-making with explicit rules about when to use specific agents. It's particularly useful for ensuring conversation continuity or handling specialized paths.
+
+Why Use Custom Routing Logic?
+Custom routing logic helps:
+
+Ensure conversation continuity with specific agents
+Handle specialized conversation paths
+Create persistent agent selection for specific topics
+Override default routing behavior for edge cases
+How to Configure Custom Agent Routing
+In the supervisor settings, locate the "Agent Routing" section (it may appear as a JSON input field)
+Create a JSON object where keys are your agent names and values are routing conditions
+Ensure agent names match exactly with your actual agent names (be careful with spaces)
+Write clear conditions that specify when the agent should be maintained
+Save your changes
+Example routing configuration:
+
+
+[
+  {
+    "message": "Stick to {AGENT_NAME} if it has already been started until user asks to exit from it once started. Only exit from the DEEPDIVE agent if user explicitly asks to exit from it. Otherwise, keep the conversation going with the {AGENT_NAME} agent.",
+    "agentName": "DEEPDIVE",
+    "enabled": true
+  }
+]
+
+This tells the supervisor to maintain the "deepdive" agent once selected, unless the user explicitly requests otherwise.
+
+Note: Agent names in the routing configuration must match exactly with the actual agent names in your system. Spaces in agent names may cause issues, so be careful when configuring routing.
+
+How to Test Your Routing Logic
+Save your routing configuration
+Use the preview or test interface to start a conversation
+Try different user inputs that should trigger different agents
+Verify that the expected agent is selected each time
+Test edge cases, particularly transitions between agents
+Troubleshooting Routing Issues
+Check that agent names in your routing configuration exactly match your actual agent names
+Ensure your JSON syntax is correct (no missing commas, brackets, or quotes)
+Verify that your routing conditions are clear and don't contradict each other
+Review the supervisor logs (if available) to see why certain routing decisions were made
+Make incremental changes and test after each change to isolate issues
+Example Use Cases
+Persistent Deep Dive Agent
+
+[
+  {
+    "message": "Stick to {AGENT_NAME} if it has already been started until user asks to exit from it once started. Only exit from the DEEPDIVE agent if user explicitly asks to exit from it. Otherwise, keep the conversation going with the {AGENT_NAME} agent.",
+    "agentName": "DEEPDIVE",
+    "enabled": true
+  }
+]
+
+Technical Support Escalation
+
+
+[
+  {
+    "message": "Once technical troubleshooting has begun, continue with this agent until the issue is resolved.",
+    "agentName": "techsupport",
+    "enabled": true
+  }
+]
+
+
+
+#################################################
+
+
+Agent-Specific Prompting
+
+Agent-specific prompts define how individual agents should behave, what knowledge they have access to, and how they should respond to user requests within their domain of expertise.
+
+What is Agent-Specific Prompting?
+Agent-specific prompts are the instructions that determine an individual agent's:
+
+Identity and personality
+Knowledge and expertise
+Response patterns and behaviors
+Conversation style and tone
+Specialized procedures or workflows
+Why Use Multiple Agents?
+Multiple agents allow you to:
+
+Isolate different functionalities
+Maintain cleaner, more focused prompts
+Specialize agents for different types of interactions
+Provide different tools and capabilities to different agents
+Create more manageable and maintainable systems
+How to Create and Edit Agent Prompts
+Navigate to your team's agents section
+Select the agent you want to edit (or create a new one)
+Locate the "Prompt" or "System Prompt" field
+Structure your prompt following the three-part format (description, notes, actions)
+Use XML tags to organize different sections of your prompt
+Save your changes
+How to Structure an Effective Agent Prompt
+The best agent prompts typically follow a three-part structure:
+
+Description Section - Explains what the agent is and its purpose
+Notes/Guidelines Section - Provides additional context or constraints
+Action/Response Section - Details specific behaviors, questions, or responses
+Example agent prompt structure:
+
+
+<description>
+You are Coach Ed Baxter, a skilled conversation coach specializing in helping users improve their communication skills in professional settings.
+</description>
+
+<notes>
+- Keep responses concise and actionable
+- Use examples from real-world scenarios when possible
+- Avoid technical jargon unless specifically requested
+</notes>
+
+<actions>
+1. Begin by understanding the user's specific communication challenge
+2. Offer practical advice with concrete examples
+3. Suggest specific exercises or techniques to improve
+4. Check if the user has questions about your recommendations
+</actions>
+How to Include Knowledge in Agent Prompts
+Identify the essential information your agent needs
+Add this information in a dedicated section of your prompt
+For larger bodies of knowledge, consider using the knowledge base feature instead
+Format complex information (like conversation samples) clearly with appropriate spacing
+Use XML tags to separate different types of knowledge
+Example of adding knowledge to a prompt:
+
+
+<conversation_samples>
+User: I struggle with public speaking anxiety.
+Agent: I understand how challenging public speaking anxiety can be. Many professionals experience this. Let's start with a simple technique: the 4-7-8 breathing method. Inhale for 4 seconds, hold for 7 seconds, and exhale for 8 seconds. Try this before your next presentation. Would you like more techniques specific to your situation?
+
+User: Yes, please. I especially freeze when faced with unexpected questions.
+Agent: For handling unexpected questions, I recommend the "bridge" technique. Acknowledge the question, bridge to what you know, and answer confidently. For example: "That's an interesting perspective. It relates to what we found in our research..." Would you like to practice this with a scenario?
+</conversation_samples>
+Specialized Agent Types
+Different use cases may require different types of specialized agents:
+
+Conversational Agents
+These handle general chat interactions, focusing on natural dialogue and information provision.
+
+Deep Dive Agents
+These guide users through structured exploration of specific topics, often following predefined question sequences.
+
+Technical Support Agents
+These help troubleshoot issues through diagnostic questions and step-by-step solutions.
+
+Sales or Lead Qualification Agents
+These qualify prospects and guide them through initial stages of a sales process.
+
+Best Practices for Agent Prompts
+Follow the three-part structure: description, notes, actions
+Focus each agent on a specific domain or function
+Include examples of ideal responses when possible
+Be specific about the tone, style, and approach you want
+Use XML tags to organize different response types
+Test with various inputs to ensure consistent performance
+
+
+####################################################
+
+
+Supervisor-Agent Interaction
+
+Understanding how the supervisor and sub-agents interact is crucial for building effective multi-agent systems. This interaction determines how user messages are routed and how your system maintains context throughout conversations.
+
+How the Supervisor-Agent System Works
+The supervisor-agent interaction follows this process:
+
+User sends a message to the system
+The supervisor evaluates the message using its prompt
+Based on routing logic, the supervisor selects an appropriate agent
+The selected agent processes the message using its prompt
+The agent's response is sent back to the user
+For subsequent messages, the supervisor either maintains the same agent or selects a new one
+Why Understanding This Interaction Matters
+Understanding this interaction helps you:
+
+Create more effective routing logic
+Design complementary agent prompts
+Build coherent conversation flows
+Troubleshoot issues with agent selection
+Ensure your system provides a seamless user experience
+How to Configure Effective Supervisor-Agent Interaction
+Ensure your supervisor prompt clearly defines when each agent should be selected
+Make sure agent names in the supervisor prompt exactly match your actual agent names
+Design agent prompts to handle the specific scenarios they'll be routed to
+Create complementary prompts where agents have clear, non-overlapping responsibilities
+Test transitions between agents to ensure smooth conversational flow
+How Information Flows Between Components
+Initial Message Processing
+When a user sends a message:
+
+The supervisor receives the message first
+The supervisor evaluates the message against its routing criteria
+The supervisor selects the most appropriate agent
+The selected agent receives the message and generates a response
+Subsequent Message Processing
+For follow-up messages:
+
+The supervisor reevaluates each new message
+The supervisor decides whether to maintain the current agent or switch to a different one
+Custom routing logic can override default behavior to maintain conversation continuity
+The selected agent generates a response based on its prompt and the conversation history
+How to Test the Complete System
+Start a test conversation in the preview or test interface
+Try inputs that should trigger different agents according to your routing rules
+Verify that the correct agent is selected for each input
+Test transitions between agents to ensure context is maintained appropriately
+Check edge cases and refine your prompts based on the results
+How to Monitor and Debug Interaction Issues
+Check the conversation logs to see which agent was selected for each message
+Review the supervisor's reasoning for its selections (if available)
+Verify that your routing conditions don't conflict or create ambiguity
+Ensure each agent is prepared to handle the types of requests it receives
+Make incremental adjustments to your prompts and test after each change
+Common Interaction Patterns
+Sequential Agents
+In this pattern, agents handle specific stages of a process in sequence:
+
+An onboarding agent handles initial setup
+A qualification agent assesses user needs
+A specialized agent provides domain-specific assistance
+Expertise-Based Routing
+In this pattern, agents are selected based on subject matter expertise:
+
+Technical questions go to a technical agent
+Billing questions go to a billing agent
+General inquiries go to a general information agent
+Depth-Based Routing
+In this pattern, different agents handle different levels of detail:
+
+A general agent handles high-level questions
+A deep dive agent handles requests for detailed information
+A specialist agent handles complex edge cases
+Next Steps
+Now that you understand supervisor-agent interaction, learn about the recommended agent creation workflow to build your system efficiently.
+
+
+#################################################
+
+
+Agent Creation and Configuration Workflow
+Creating an effective multi-agent system requires a methodical approach. This guide outlines the recommended workflow for planning, creating, and configuring your agents in Kodey.ai.
+
+Recommended Workflow for Creating and Configuring Agents
+Follow this workflow for the best results:
+
+Plan your agent system
+Create sub-agents first
+Configure the supervisor last
+Test and refine iteratively
+How to Plan Your Agent System
+Identify the distinct functions your system needs to perform
+
+List all the different types of tasks your system should handle
+Group similar tasks that could be handled by the same agent
+Identify any specialized knowledge domains required
+Determine how many agents you need based on these functions
+
+Start with fewer agents and add more if needed
+Consider creating specialized agents for complex or knowledge-intensive tasks
+Look for natural divisions in responsibilities
+Define clear, non-overlapping responsibilities for each agent
+
+Create a brief description of each agent's purpose
+Establish boundaries between agent responsibilities
+Identify when each agent should be activated
+Plan the conversation flows and transitions between agents
+
+Map out typical user journeys through your system
+Identify trigger points for transitions between agents
+Consider how context will be maintained during transitions
+Document your plan before beginning implementation
+
+Create a simple diagram of your agent system
+List each agent with its key responsibilities
+Define the criteria for selecting each agent
+How to Create and Configure Sub-Agents
+Navigate to your team's agents section
+
+Log into your Kodey.ai dashboard
+Select your team
+Go to the "Agents" section
+Click "Create New Agent" (or similar)
+
+Look for a button or option to create a new agent
+Click it to start the agent creation process
+Give your agent a descriptive name that reflects its purpose
+
+Choose a name that clearly indicates the agent's function
+Remember that this name will be used in routing, so keep it concise
+Avoid spaces in names if possible to prevent routing issues
+Create the agent's prompt following the three-part structure
+
+Start with a description of the agent's identity and purpose
+Add notes with guidelines, constraints, or additional context
+Include actions that detail specific behaviors or responses
+Use XML tags to organize different sections of your prompt
+Configure any additional settings (knowledge base access, tools, etc.)
+
+Connect relevant knowledge bases if applicable
+Enable any tools the agent might need
+Set any other agent-specific configurations
+Test the agent individually before integrating it with the supervisor
+
+Use the agent preview or test interface
+Try various inputs that the agent should handle
+Refine the prompt based on your testing results
+How to Configure the Supervisor
+After creating all your sub-agents, navigate to the supervisor settings
+
+Go to your team settings
+Find the "Supervisor" tab or section
+Start with the default supervisor prompt
+
+Keep the core functionality intact
+Use this as the foundation for your customizations
+Add context about your agents and their specialties
+
+Briefly describe each agent's purpose
+Explain when each agent should be selected
+Use XML tags to organize different routing conditions
+Configure any custom routing logic needed for your use case
+
+Set up any persistent agent selections if needed
+Define specific routing conditions for special cases
+Ensure agent names match exactly in your routing configuration
+Test the complete system with various user inputs
+
+Try inputs that should trigger different agents
+Test transitions between agents
+Verify that the correct agent is selected each time
+Refine your configuration based on testing results
+
+Adjust routing criteria if needed
+Modify agent prompts to better handle their assigned tasks
+Iterate until you achieve the desired behavior
+How to Iterate and Improve Your System
+Test your system with real-world scenarios
+
+Use actual questions or tasks your system will face
+Have different people test the system
+Collect a variety of inputs and interaction patterns
+Identify any routing issues or agent limitations
+
+Note any cases where the wrong agent is selected
+Identify scenarios where agents struggle to respond effectively
+Look for edge cases that aren't handled well
+Collect user feedback on the system's performance
+
+Ask testers about their experience
+Note any confusion or friction points
+Identify areas where responses could be improved
+Make targeted improvements to specific prompts or routing logic
+
+Address the most significant issues first
+Make incremental changes rather than wholesale revisions
+Focus on improving one aspect at a time
+Test again after each change to verify improvements
+
+Compare performance before and after changes
+Ensure changes don't create new issues
+Verify that the targeted issues are resolved
+Document successful configurations for future reference
+
+Keep notes on what works well
+Record any particular prompt structures that are effective
+Document any issues you encountered and how you resolved them
+Why This Order Matters
+Creating sub-agents first ensures:
+
+Each agent has a well-defined purpose before routing logic is established
+You understand each agent's capabilities when designing the supervisor
+The supervisor can be configured to route to fully functional agents
+You can test individual components before testing the complete system
+
+
+#####################################################
+
+
+Best Practices
+Implementing these best practices will help you create effective, maintainable multi-agent systems in Kodey.ai. These guidelines are based on real-world experience and can help you avoid common pitfalls.
+
+Supervisor Prompt Best Practices
+How to Implement Supervisor Prompt Best Practices
+Always start with the default supervisor prompt
+
+Retain the core functionality
+Add your customizations without removing essential instructions
+Preserve the "Respond with the worker to act next" instruction
+Add your customizations while preserving the core functionality
+
+Add your content after or around the default text
+Never remove or significantly modify the default instructions
+Ensure your additions complement rather than conflict with the defaults
+Create clear, distinct criteria for when each agent should be selected
+
+Define specific triggers for each agent
+Avoid overlapping criteria that could cause confusion
+Make selection criteria as objective as possible
+Use XML tags to organize different routing conditions
+
+Create tags for different conversation flows
+Use descriptive tag names that indicate purpose
+Ensure all tags are properly closed
+Keep routing logic simple and understandable
+
+Avoid overly complex conditions
+Use plain language to describe routing criteria
+Focus on the most important factors for agent selection
+Test thoroughly after making changes
+
+Try various inputs that should trigger different agents
+Test edge cases and transitions
+Verify that the system behaves as expected
+Agent Prompt Best Practices
+How to Implement Agent Prompt Best Practices
+Follow the three-part structure: description, notes, actions
+
+Begin with a clear description of the agent's identity and purpose
+Include notes with guidelines and constraints
+Detail specific actions or behaviors expected of the agent
+Focus each agent on a specific domain or function
+
+Give each agent a clear area of expertise
+Avoid making agents responsible for too many different tasks
+Create clear boundaries between agent responsibilities
+Include examples of ideal responses when possible
+
+Show the agent what good responses look like
+Include sample dialogues for common scenarios
+Demonstrate the preferred tone and style
+Be specific about the tone, style, and approach you want
+
+Describe the personality or character the agent should embody
+Specify the level of formality or informality
+Indicate whether responses should be brief or detailed
+Use XML tags to organize different response types
+
+Create tags for different types of interactions
+Separate procedural elements from general guidance
+Use tags to isolate specific knowledge domains
+Test with various inputs to ensure consistent performance
+
+Try a range of questions or requests within the agent's domain
+Test edge cases and unusual inputs
+Verify that responses maintain the desired quality and style
+XML Tag Best Practices
+How to Use XML Tags Effectively
+Choose descriptive tag names that reflect content purpose
+
+Use names that clearly indicate what the section contains
+Avoid overly general names like "section1" or "part2"
+Keep names reasonably short but meaningful
+Keep tag naming consistent across all your prompts
+
+Use the same tag names for similar content across agents
+Maintain consistent capitalization and formatting
+Create a naming convention and stick to it
+Close all tags properly to avoid parsing issues
+
+Ensure every opening tag has a corresponding closing tag
+Check for typos in tag names between opening and closing tags
+Verify that tags are properly nested
+Nest tags logically when representing hierarchical information
+
+Use nested tags for subcategories or related content
+Maintain clear parent-child relationships
+Ensure nested tags are closed in the correct order
+Use tags to separate distinct conversation flows or procedures
+
+Create dedicated tags for different interaction types
+Separate procedural steps from general guidelines
+Use tags to isolate specific knowledge domains
+Don't overuse tags—only create them for meaningful separations
+
+Use tags when they add clarity or structure
+Avoid creating tags for very small sections
+Keep the overall structure intuitive and readable
+Testing and Refinement Best Practices
+How to Test and Refine Your Prompts
+Start with basic test cases that should clearly trigger specific agents
+
+Begin with straightforward examples
+Verify that the core functionality works as expected
+Establish a baseline of performance
+Test edge cases where the routing decision might be ambiguous
+
+Try inputs that could potentially match multiple agents
+Test corner cases and unusual requests
+Identify any uncertainties in your routing logic
+Try conversational paths that involve transitions between agents
+
+Test sequences that should trigger different agents in succession
+Verify that context is maintained appropriately
+Check that transitions feel natural to the user
+Check how the system handles unexpected or off-topic inputs
+
+Try inputs that don't clearly match any agent's expertise
+Test recovery from misunderstandings
+Verify that the system gracefully handles unusual requests
+Make small, incremental changes when refining prompts
+
+Change one aspect at a time
+Test after each change to isolate effects
+Keep track of which changes improve performance
+Document what works well for future reference
+
+Record effective prompt structures
+Note successful routing patterns
+Keep examples of particularly effective agent prompts
+General System Design Best Practices
+How to Design Effective Multi-Agent Systems
+Start simple and add complexity as needed
+
+Begin with fewer agents and add more if necessary
+Focus on core functionality first
+Expand capabilities incrementally
+Create clear separation of concerns
+
+Give each agent a distinct role
+Minimize overlap between agent responsibilities
+Make agent selection criteria unambiguous
+Balance specificity and flexibility
+
+Make prompts detailed enough to guide behavior
+Allow enough flexibility for natural responses
+Avoid overly rigid instructions that limit adaptability
+Design for conversation flows, not just individual responses
+
+Consider the entire user journey
+Plan for transitions between topics and agents
+Ensure a coherent overall experience
+Regularly review and update your system
+
+Revisit prompts periodically to identify improvements
+Update content as your needs evolve
+Incorporate feedback from actual usage
+Use versioning and backups
+
+Keep copies of working configurations
+Test changes in a sandbox before applying them
+Maintain a history of prompt versions
+By following these best practices, you can create effective multi-agent systems on the Kodey.ai platform that deliver consistent, high-quality interactions for your users.
