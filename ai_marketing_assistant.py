@@ -18,7 +18,7 @@ if not openai_key:
 st.set_page_config(page_title="AI Business Optimization Intake", layout="wide")
 
 # Initialize LLM
-llm = ChatOpenAI(model="gpt-4", temperature=0.7, openai_api_key=openai_key)
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7, openai_api_key=openai_key)
 
 # Sidebar: Business Profile
 st.sidebar.header("📋 Business Intake Form")
