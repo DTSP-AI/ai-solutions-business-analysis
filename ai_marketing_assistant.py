@@ -32,7 +32,10 @@ employees      = st.sidebar.number_input("Number of Employees", min_value=0, ste
 
 # Main title
 st.title("🧠 AI Solutions Discovery & Optimization Intake")
-st.write(f"Welcome {user_name} — let's break down your current systems and find the highest ROI opportunities for automation and AI integration.")
+st.write(
+    f"Welcome {user_name} — let's break down your current systems and find "
+    "the highest ROI opportunities for automation and AI integration."
+)
 
 # Sales & Operations
 st.subheader("🧰 Sales & Operations")
@@ -45,56 +48,65 @@ follow_up       = st.text_area("How do you track follow-ups or missed leads?")
 
 # Marketing
 st.subheader("📣 Marketing")
-channels             = st.multiselect("Active Marketing Channels", ["Google Ads","Meta Ads","TikTok","SEO","Influencer","Referral","Events"])
+channels             = st.multiselect("Active Marketing Channels", ["Google Ads", "Meta Ads", "TikTok", "SEO", "Influencer", "Referral", "Events"])
 lead_routing         = st.text_area("How are leads captured and routed?")
 lead_action          = st.text_area("Describe what happens after a lead comes in:")
 existing_automations = st.text_area("Any automations currently in place?")
 
 # Engagement & Retention
 st.subheader("📞 Engagement & Retention")
-sales_cycle      = st.slider("Average Sales Cycle (days)", min_value=1, max_value=180, value=30)
+sales_cycle       = st.slider("Average Sales Cycle (days)", min_value=1, max_value=180, value=30)
 follow_up_tactics = st.text_area("How do you follow up with missed calls, abandoned carts, or no-shows?")
 retention         = st.text_area("Any current loyalty, membership, or re-engagement programs?")
 
 # AI & Automation Readiness
 st.subheader("🤖 AI & Automation Readiness")
-uses_ai         = st.selectbox("Are you using AI currently?", ["Yes", "No"])
-ai_tools        = st.text_area("If yes, describe your AI tools or setup.")
-manual_areas    = st.multiselect("Where do you spend the most manual time?", ["Lead follow-up","Appointment setting","Content creation","Customer questions"])
+uses_ai          = st.selectbox("Are you using AI currently?", ["Yes", "No"])
+ai_tools         = st.text_area("If yes, describe your AI tools or setup.")
+manual_areas     = st.multiselect("Where do you spend the most manual time?", ["Lead follow-up", "Appointment setting", "Content creation", "Customer questions"])
 dream_automation = st.text_area("What would you automate tomorrow if it worked perfectly?")
 
 # Tech Stack
 st.subheader("⚙️ Tech Stack")
-tools      = st.multiselect("Current Tools in Use", ["Calendly","Shopify","Squarespace","Twilio","Stripe","Zapier","Klaviyo","Mailchimp","GoHighLevel"])
-api_access = st.selectbox("Do you have admin/API access to these tools?", ["Yes","No","Not sure"])
-comms      = st.selectbox("Preferred customer communication method:", ["Text","Email","Phone","DMs","Website Chat"])
+tools      = st.multiselect("Current Tools in Use", ["Calendly", "Shopify", "Squarespace", "Twilio", "Stripe", "Zapier", "Klaviyo", "Mailchimp", "GoHighLevel"])
+api_access = st.selectbox("Do you have admin/API access to these tools?", ["Yes", "No", "Not sure"])
+comms      = st.selectbox("Preferred customer communication method:", ["Text", "Email", "Phone", "DMs", "Website Chat"])
 
 # Goals & Timeline
 st.subheader("🌟 Goals & Timeline")
 goals           = st.text_area("Top 3 revenue goals (next 6 months):")
 biggest_problem = st.text_area("What’s the #1 problem you're trying to solve right now?")
-comfort         = st.selectbox("Comfort level with automation/AI:", ["Bring on the robots","Need guidance","Start simple"])
-engagement      = st.selectbox("Preferred engagement model:", ["Done-For-You","Hybrid","DIY with Support"])
-timeline        = st.selectbox("Implementation timeline:", ["<30 days","30-60 days","60-90 days","Flexible"])
+comfort         = st.selectbox("Comfort level with automation/AI:", ["Bring on the robots", "Need guidance", "Start simple"])
+engagement      = st.selectbox("Preferred engagement model:", ["Done-For-You", "Hybrid", "DIY with Support"])
+timeline        = st.selectbox("Implementation timeline:", ["<30 days", "30-60 days", "60-90 days", "Flexible"])
 
-# Generate optimization report
-if st.button("🧠 Generate Optimization Summary"):
-    with st.spinner("Analyzing your business profile..."):
+# Generate client & dev report
+if st.button("🧠 Generate Full Report & Scope"):
+    with st.spinner("Generating client-facing report and development scope..."):
         try:
+            # Build intake summary
             intake_summary = {
+                "Client Name": user_name,
+                "Business Name": business_name,
+                "Website": website,
+                "Industry": industry,
+                "Location": location,
+                "Annual Revenue": annual_revenue,
+                "Employees": employees,
+                "Sales Process": sales_process,
+                "Lead Tools": lead_tools,
                 "CRM": crm_name if has_crm == "Yes" else "None",
-                "Lead Capture Tools": lead_tools,
                 "Booking Process": booking_process,
                 "Follow-Up Process": follow_up,
                 "Marketing Channels": channels,
-                "Routing": lead_routing,
+                "Lead Routing": lead_routing,
                 "Post Lead Actions": lead_action,
-                "Automations": existing_automations,
+                "Existing Automations": existing_automations,
                 "Sales Cycle (days)": sales_cycle,
-                "Retention Strategy": retention,
+                "Retention Programs": retention,
                 "AI Usage": ai_tools if uses_ai == "Yes" else "None",
-                "Manual Areas": manual_areas,
-                "Desired Automation": dream_automation,
+                "Manual Effort Areas": manual_areas,
+                "Dream Automation": dream_automation,
                 "Tech Tools": tools,
                 "API Access": api_access,
                 "Communication": comms,
@@ -105,28 +117,41 @@ if st.button("🧠 Generate Optimization Summary"):
                 "Timeline": timeline
             }
 
-            prompt = f"""
-You are a senior AI Solutions Architect.
+            # Anti-hallucination system prompt
+            system_prompt = (
+                "You are a Senior AI Solutions Architect and Consultant. "
+                "Speak only in crystal-clear bullet points. Never hallucinate—only use facts from the intake JSON. "
+                "If you lack data, say 'Insufficient data' rather than guessing. "
+                "Output must be so structured that a chimpanzee could read it on his phone speeding down the highway with a female chimpanzee in his lap."
+            )
 
-Based on this intake data, generate a strategic AI + automation roadmap with these sections:
+            # Structured user prompt
+            user_prompt = (
+                "First, generate the Client-Facing Report with sections:\n"
+                "1. Executive Summary (1–2 sentences)\n"
+                "2. Current System Snapshot (bullets)\n"
+                "3. Key Challenges (top 3 bullets)\n"
+                "4. Opportunities & Recommendations (prioritized bullets)\n"
+                "5. Next Steps for the Client (3 non-technical actions with deadlines)\n\n"
+                "Then, generate the Dev Implementation Scope with sections:\n"
+                "A. Phase Plan as table: Phase | Task | Deliverable | Owner | Effort (hrs) | Timeline (weeks)\n"
+                "B. Tech Stack Details: list GHL workflows, Vapi agent roles, Twilio flows\n"
+                "C. Anti-BS Validation: list checks to prevent hallucinations and ensure QA\n\n"
+                f"Here is the intake JSON:\n{intake_summary}"
+            )
 
-🔍 Current System Snapshot
-🚧 Identified Bottlenecks
-💡 AI & Automation Opportunities
-🚀 Suggested Next Steps
-
-DATA:
-{intake_summary}
-"""
             messages = [
-                SystemMessage(content="You are a senior AI strategist."),
-                HumanMessage(content=prompt)
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=user_prompt)
             ]
+
+            # Call LLM
             response = llm(messages)
 
-            st.subheader("📊 Optimization Report")
+            # Display
+            st.subheader("📋 Client-Facing Report & Dev Implementation Scope")
             st.markdown(response.content)
 
         except Exception as e:
-            st.error("❌ Failed to generate the report.")
+            st.error("❌ Failed to generate the report & scope.")
             st.code(str(e))
