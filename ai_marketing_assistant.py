@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # File: C:\AI_src\marketing-assistant\ai_marketing_assistant.py
 
 import os
@@ -27,13 +26,13 @@ def load_txt(path):
     except FileNotFoundError:
         return ""
 
-agent1_prompt = load_json("knowledge_base/agent_1.json")
-agent2_prompt = load_json("knowledge_base/agent_2.json")
+agent1_prompt = load_json("prompts/agent_1.json")
+agent2_prompt = load_json("prompts/agent_2.json")
 kodey_docs = load_txt("knowledge_base/kodey_agent_build_docs.txt")
 
 # ─── LLM & UI Init ──────────────────────────────────────────────────────────────
 st.set_page_config(page_title="AI Business Optimization Intake", layout="wide")
-llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.7, openai_api_key=openai_key)
+llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.9, openai_api_key=openai_key)
 
 # ─── Intake Form ────────────────────────────────────────────────────────────────
 st.sidebar.header("📋 Business Intake Form")
