@@ -46,7 +46,7 @@ employees = st.sidebar.number_input("Number of Employees", min_value=0, step=1, 
 
 st.title("🧠 AI Solutions Discovery & Optimization Intake")
 
-# ── Sections ────────────────────────────────────────────────────────────────────
+# ── Main Intake Fields ──────────────────────────────────────────────────────────
 sales_process = st.text_area("Describe your current sales process:")
 lead_tools = st.text_area("What tools do you currently use for leads and appointments?")
 has_crm = st.selectbox("Do you use a CRM?", ["Yes", "No"])
@@ -78,16 +78,22 @@ comfort = st.selectbox("Comfort level with automation/AI:", ["Bring on the robot
 engagement = st.selectbox("Preferred engagement model:", ["Done-For-You","Hybrid","DIY with Support"])
 timeline = st.selectbox("Implementation timeline:", ["<30 days","30-60 days","60-90 days","Flexible"])
 
-with st.expander("🔰 HAF (Hierarchical Agent Framework)"):
-    haf_roles = st.text_area("List critical roles and responsibilities")
-    haf_workflows = st.text_area("Map key workflows (e.g., Lead → Sale → Delivery)")
-    haf_agents = st.text_area("Which tasks could be delegated to AI agents?")
+# ─── HAF Inputs ─────────────────────────────────────────────────────────────────
+critical_roles = st.text_area("Who are the key team members or roles in your operations (e.g., Sales Rep, Ops Manager, Admin)?")
+role_responsibilities = st.text_area("What are the primary responsibilities for each of those roles?")
+workflow_map = st.text_area("Describe the sequence of events from first contact to customer delivery or fulfillment:")
+ai_task_opportunities = st.text_area("Where do you see opportunities to reduce manual work or delegate tasks to AI?")
+handoff_points = st.text_area("Where do tasks typically get passed from one role/team to another?")
+decision_points = st.text_area("Which decisions are made by humans today that could potentially be automated?")
 
-with st.expander("🧩 CII (Cognitive Infrastructure Intake)"):
-    memory_needs = st.text_area("What memory or data history do agents need?")
-    agent_tools = st.text_area("List specific APIs/tools needed for each agent")
-    security = st.text_area("Any compliance or regulatory requirements?")
-    latency_critical = st.text_area("Which processes must be real-time vs async?")
+# ─── CII Inputs ─────────────────────────────────────────────────────────────────
+data_sources = st.text_area("What systems or databases currently store your customer, product, or operational data?")
+contextual_memory = st.text_area("What kind of historical context (e.g., past orders, lead history, interaction logs) would be useful for your agents?")
+tools_by_function = st.text_area("For each function (e.g., scheduling, payments, marketing), what tools or platforms do you currently use?")
+api_readiness = st.text_area("Do you have API access or admin control for the tools you mentioned?")
+compliance_flags = st.text_area("Are there any compliance frameworks or certifications you must meet (e.g., HIPAA, GDPR)?")
+realtime_flows = st.text_area("Which parts of your workflow need to happen instantly or in real time?")
+batch_or_async_flows = st.text_area("Which tasks can happen in the background or after-hours (e.g., reporting, email follow-up)?")
 
 # ─── Trigger Agent Flow ─────────────────────────────────────────────────────────
 if st.button("🧠 Generate Full Report & Scope"):
@@ -124,11 +130,18 @@ if st.button("🧠 Generate Full Report & Scope"):
                 "comfort": comfort, "engagement": engagement, "timeline": timeline
             },
             "HAF": {
-                "roles": haf_roles, "workflows": haf_workflows, "agents": haf_agents
+                "CriticalRoles": critical_roles,
+                "KeyWorkflows": workflow_map,
+                "AIEligibleTasks": ai_task_opportunities
             },
             "CII": {
-                "memory": memory_needs, "tools": agent_tools,
-                "compliance": security, "latency": latency_critical
+                "MemoryRequirements": contextual_memory,
+                "ToolsRequired": tools_by_function,
+                "SecurityNotes": compliance_flags,
+                "Latency": {
+                    "Realtime": realtime_flows,
+                    "Async": batch_or_async_flows
+                }
             },
             "ReferenceDocs": kodey_docs
         }
@@ -153,3 +166,5 @@ if st.button("🧠 Generate Full Report & Scope"):
 
         st.subheader("📋 Client & Dev Facing Report")
         st.markdown(final_resp.content)
+
+
