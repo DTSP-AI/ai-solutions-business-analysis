@@ -1,5 +1,3 @@
-# File: C:\AI_src\marketing-assistant\ai_marketing_assistant.py
-
 import os
 import streamlit as st
 from dotenv import load_dotenv

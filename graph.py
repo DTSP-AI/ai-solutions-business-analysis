@@ -3,6 +3,7 @@
 import os
 import json
 import logging
+import re
 from typing import TypedDict, Any, List
 from pydantic import BaseModel, ValidationError
 from langchain_openai import ChatOpenAI
@@ -82,12 +83,13 @@ def bootstrap_node(state: GraphState) -> dict:
 def summarizer_node(state: GraphState) -> dict:
     raw_json = json.dumps(state["intake"].model_dump(), indent=2)
     messages = [
-        SystemMessage(content=agent1_prompt["system"] + "\n\n" + multi_kb + "\n" + core_kb + "\n" + tools_kb),
+        SystemMessage(content=agent1_prompt["system"] + "\n\n" + multi_kb),
         HumanMessage(content=agent1_prompt["user_template"].replace("{RAW_INTAKE_JSON}", raw_json))
     ]
-    response = llm(messages)
+    response = llm.invoke(messages)
     try:
-        summary = IntakeSummary.parse_raw(response.content)
+        clean_response = re.sub(r"^```(?:json)?\\n?|```$", "", response.content.strip(), flags=re.IGNORECASE | re.MULTILINE).strip()
+        summary = IntakeSummary.parse_raw(clean_response)
         return {"summary": summary}
     except ValidationError as e:
         logger.error(f"[SUMMARIZER] Validation failed: {e}")
@@ -96,12 +98,13 @@ def summarizer_node(state: GraphState) -> dict:
 def report_node(state: GraphState) -> dict:
     summary_json = json.dumps(state["summary"].model_dump(), indent=2)
     messages = [
-        SystemMessage(content=agent2_prompt["system"] + "\n\n" + multi_kb + "\n" + core_kb + "\n" + tools_kb),
+        SystemMessage(content=agent2_prompt["system"] + "\n\n" + core_kb + "\n" + tools_kb),
         HumanMessage(content=summary_json)
     ]
-    response = llm(messages)
+    response = llm.invoke(messages)
     try:
-        data = json.loads(response.content)
+        clean_response = re.sub(r"^```(?:json)?\\n?|```$", "", response.content.strip(), flags=re.IGNORECASE | re.MULTILINE).strip()
+        data = json.loads(clean_response)
         return {
             "client_report": ClientFacingReport(report_markdown=data.get("client_report", "")),
             "dev_report": DevFacingReport(blueprint_graph=data.get("developer_report", ""))
