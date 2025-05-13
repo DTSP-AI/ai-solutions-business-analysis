@@ -26,11 +26,11 @@ with open(os.path.join(BASE_DIR, "prompts/agent_1.json"), encoding="utf-8") as f
     agent1_prompt = json.load(f)
 with open(os.path.join(BASE_DIR, "prompts/agent_2.json"), encoding="utf-8") as f:
     agent2_prompt = json.load(f)
-with open(os.path.join(BASE_DIR, "knowledge_base/LGarchitect_tools"), encoding="utf-8") as f:
+with open(os.path.join(BASE_DIR, "knowledge_base/LGarchitect_tools_slim.txt"), encoding="utf-8") as f:
     tools_kb = f.read()
-with open(os.path.join(BASE_DIR, "knowledge_base/LGarchitect_multi_agent.txt"), encoding="utf-8") as f:
+with open(os.path.join(BASE_DIR, "knowledge_base/LGarchitect_multi_agent_slim.txt"), encoding="utf-8") as f:
     multi_kb = f.read()
-with open(os.path.join(BASE_DIR, "knowledge_base/LGarchitect_LangGraph_core.txt"), encoding="utf-8") as f:
+with open(os.path.join(BASE_DIR, "knowledge_base/LGarchitect_LangGraph_core_slim.txt"), encoding="utf-8") as f:
     core_kb = f.read()
 
 # ─── Data Models ───────────────────────────────────────────────────────────────
@@ -88,8 +88,10 @@ def summarizer_node(state: GraphState) -> dict:
     ]
     response = llm.invoke(messages)
     try:
-        clean_response = re.sub(r"^```(?:json)?\\n?|```$", "", response.content.strip(), flags=re.IGNORECASE | re.MULTILINE).strip()
-        summary = IntakeSummary.parse_raw(clean_response)
+        content = response.content.strip()
+        if content.startswith("```"):
+            content = "\n".join(line for line in content.splitlines() if not line.strip().startswith("```")).strip()
+        summary = IntakeSummary.parse_raw(content)
         return {"summary": summary}
     except ValidationError as e:
         logger.error(f"[SUMMARIZER] Validation failed: {e}")
@@ -103,8 +105,10 @@ def report_node(state: GraphState) -> dict:
     ]
     response = llm.invoke(messages)
     try:
-        clean_response = re.sub(r"^```(?:json)?\\n?|```$", "", response.content.strip(), flags=re.IGNORECASE | re.MULTILINE).strip()
-        data = json.loads(clean_response)
+        content = response.content.strip()
+        if content.startswith("```"):
+            content = "\n".join(line for line in content.splitlines() if not line.strip().startswith("```")).strip()
+        data = json.loads(content)
         return {
             "client_report": ClientFacingReport(report_markdown=data.get("client_report", "")),
             "dev_report": DevFacingReport(blueprint_graph=data.get("developer_report", ""))
